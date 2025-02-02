@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+        <script>
+            // TODO: Add code to check answers to questions
+            function addTextConfirmation(result, idHeader) {
+                const rmText = document.getElementById('newText');
+                const header = document.querySelector(`#${idHeader}`);
+                if (rmText) {
+                    rmText.remove();
+                }
+                const newText = document.createElement('p');
+                newText.setAttribute('id','newText');
+                if (result == 'true') {
+                    newText.textContent = 'Correct!';
+                }
+                else {
+                    newText.textContent = 'Incorrect!';
+                }
+                header.insertAdjacentElement('afterend', newText);
+            }
+
+            function changeColorBtn(idBtn, idHeader) {
+                const goodBtn = document.querySelector(`#${idBtn}`);
+                const badBtn = document.querySelector(`#${idBtn}`);
+                if (idBtn == 'opt2') {
+                    goodBtn.style.backgroundColor = 'green';
+                    addTextConfirmation('true', idHeader);
+                }
+                else {
+                    badBtn.style.backgroundColor = 'red';
+                    addTextConfirmation('false', idHeader);
+                }
+            }
+
+            function changeColorInputAnswer (idInput, idHeader) {
+                const answer = document.querySelector(`#${idInput}`);
+                if (answer.value == 'Godzilla Minus One') {
+                    answer.style.backgroundColor = 'green';
+                    addTextConfirmation('true', idHeader);
+                }
+                else {
+                    answer.style.backgroundColor = 'red';
+                    addTextConfirmation('false', idHeader);
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <!-- TODO: Add multiple choice question here -->
+                <h3 id="part1">How many Godzilla movies have been produced to date, taking into account Toho and American ones?</h3>
+                <button onclick="changeColorBtn(this.id, 'part1')" id="opt1">83</button>
+                <button onclick="changeColorBtn(this.id, 'part1')" id="opt2">38</button>
+                <button onclick="changeColorBtn(this.id, 'part1')" id="opt3">41</button>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <!-- TODO: Add free response question here -->
+                <h3 id='part2'>What is the name of Toho's latest Godzilla movie?</h3>
+                <form>
+                    <input type="text" id="answerField" name="answerField">
+                    <button onclick="changeColorInputAnswer('answerField', 'part2')" id="btnSubmitAnswer">Send answer</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,6 @@
+Request for a number of steps.
+If the user don't provide a valid number, between 1 and 8, recall the function (do-while).
+    Store de height of the pyramid in a variable named "height".
+Make a for-loop nested inside another one, the first one to generate the rows (i) and the nested one, to fill in the rows.
+    Write an if-else statement to print a space or a hash, and at the end of the first loop(i), generate a new line.
+End of program.

@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Index
+{% endblock %}
+
+{% block main %}
+<div class="container">
+  <div class="header">
+    <h1>History</h1>
+  </div>
+  <div class="container">
+    <div class="section">
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Share</th>
+            <th>Price</th>
+            <th>Number</th>
+            <th>Date</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- TODO: Loop through the database entries to display them in this table -->
+          {% for row in history_table %}
+          <tr>
+            <td>{{ row.type }}</td>
+            <td>{{ row.share }}</td>
+            <td>{{ row.price }}</td>
+            <td>{{ row.quantity }}</td>
+            <td>{{ row.date }}</td>
+            <td>{{ row.timestamp }}</td>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

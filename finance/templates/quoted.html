@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Quoted
+{% endblock %}
+
+{% block main %}
+<div class="container">
+  <div class="header">
+    <h1>Stock Data</h1>
+  </div>
+  <div class="container">
+    <div class="section">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Symbol</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- TODO: Loop through the database entries to display them in this table -->
+          <tr>
+            <td>{{ name }}</td>
+            <td>{{ price }}</td>
+            <td>{{ symbol }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Sell
+{% endblock %}
+
+{% block main %}
+<form action="/sell" method="POST">
+  <div>
+    <!-- <label for="symbols">Select Symbol</label> -->
+      <select id="symbol" name="symbol">
+        {% for symbol in user_symbols %}
+        <option value="{{ symbol.share }}">{{ symbol.share }}</option>
+        {% endfor %}
+      </select>
+  </div>
+  <div>
+    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="shares" placeholder="Number of shares" type="number">
+  </div>
+  <div>
+    <button class="btn btn-primary" type="submit">Sell</button>
+  </div>
+</form>
+<!-- These scripts reset the text and set a new one ⬇️ -->
+<!-- <script>
+  function changeDropdownText(text) {
+    document.getElementById('symbols').textContent = text;
+    document.getElementById('hiddenSymbolInput').value = text;
+  }
+
+  function resetDropdownText() {
+    document.getElementById('symbols').textContent = 'Select Symbol';
+  }
+</script> -->
+{% endblock %}

@@ -1,0 +1,26 @@
+sort1 uses: Bubble sort
+
+How do you know?: This is the fastest algorithm for sorted values, compared with Selection sort.
+
+sort1	random50000     sorted50000     reversed50000
+real    0m5.788s	    0.0538s			5.101s
+user    0m5.164s	    0.011s			4.421s
+sys     0m0.251s	    0.263s			0.272s
+
+sort2 uses: Merge sort
+
+How do you know?: Because is the fastest in all tests!
+
+sort2 	random50000     sorted50000     reversed50000
+real    0m0.638s	    0.674s          0.677s
+user    0m0.037s	    0.042s          0.040s
+sys     0m0.268s	    0.244s          0.232s
+
+sort3 uses: Selection sort
+
+How do you know?: This is the slowest algorithm for sorted values, compared with Bubble sort.
+
+sort3
+real    0m2.480s	    2.290s			2.579s
+user    0m1.886s	    1.778s			1.995s
+sys     0m0.257s	    0.239s			0.262s

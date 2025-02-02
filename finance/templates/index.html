@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Index
+{% endblock %}
+
+{% block main %}
+<div class="container">
+  <div class="header">
+    <h1>Index</h1>
+  </div>
+  <div class="container">
+    <div class="section">
+      <table>
+        <thead>
+          <tr>
+            <td>Current Cash</td>
+            <td>Grand Total</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ current_cash }}</td>
+            <td>{{ grand_total }}</td>
+          </tr>
+        </tbody>
+      </table>
+    <div class="section">
+    <div class="section">
+      <table>
+        <thead>
+          <tr>
+            <th>Share</th>
+            <th>Number</th>
+            <th>Price</th>
+            <th>Total </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- TODO: Loop through the database entries to display them in this table -->
+          {% for value in current_table %}
+          <tr>
+            <td>{{ value["share"] }}</td>
+            <td>{{ value["number"] }}</td>
+            <td>{{ value["price"] }}</td>
+            <td>{{ value["totals"] }}</td>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

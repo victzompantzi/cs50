@@ -1,0 +1,20 @@
+Tag list:
+header
+nav
+div
+a
+button
+ul
+li
+form
+input
+h1
+
+CSS properties list:
+font-size
+overflow-x
+scroll-padding-top
+scroll-behavior
+width
+
+I chose use Bootstrap's carousel component for the pets page and a simple JavaScript fasde animation with JavaScript on the book reviews image.
