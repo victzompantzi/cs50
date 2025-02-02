@@ -7,7 +7,14 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
 
-from helpers import apology, login_required, lookup, usd, is_positive_integer, is_only_alphabet
+from helpers import (
+    apology,
+    login_required,
+    lookup,
+    usd,
+    is_positive_integer,
+    is_only_alphabet,
+)
 
 # Configure application
 app = Flask(__name__)
@@ -40,24 +47,35 @@ def after_request(response):
 def index():
     """Show portfolio of stocks"""
     current_user = session.get("user_id")
-    current_cash = db.execute(
-        "SELECT cash FROM users WHERE id = ?", current_user)
+    current_cash = db.execute("SELECT cash FROM users WHERE id = ?", current_user)
     fcurrent_cash = usd(current_cash[0]["cash"])
     # Get the share name, quantity, price and total of each transaction
     try:
         # current_table = db.execute(
         #     "SELECT r.share, r.price, u.quantity, (r.price * u.quantity) AS total FROM share_purchases u JOIN share_prices r ON u.share_id = r.id WHERE u.user_id = ? AND u.date = ?", current_user, current_date)
         db.execute("DELETE FROM share_totals")
-        db.execute("INSERT INTO share_totals (share, number, price, totals) SELECT r.share, SUM(u.quantity) AS number, r.price, SUM((r.price * u.quantity)) AS totals FROM share_purchases u JOIN share_prices r ON u.share_id = r.id WHERE u.user_id= ? AND u.date = ? GROUP BY r.share", current_user, current_date)
+        db.execute(
+            "INSERT INTO share_totals (share, number, price, totals) SELECT r.share, SUM(u.quantity) AS number, r.price, SUM((r.price * u.quantity)) AS totals FROM share_purchases u JOIN share_prices r ON u.share_id = r.id WHERE u.user_id= ? AND u.date = ? GROUP BY r.share",
+            current_user,
+            current_date,
+        )
         current_table = db.execute("SELECT * FROM share_totals")
         for row in current_table:
             row["price"] = usd(row["price"])
             row["totals"] = usd(row["totals"])
         grand_total = db.execute(
-            "SELECT SUM((r.price * u.quantity)) AS grand_total FROM share_purchases u JOIN share_prices r ON u.share_id = r.id WHERE u.user_id= ? AND u.date = ?", current_user, current_date)
+            "SELECT SUM((r.price * u.quantity)) AS grand_total FROM share_purchases u JOIN share_prices r ON u.share_id = r.id WHERE u.user_id= ? AND u.date = ?",
+            current_user,
+            current_date,
+        )
         fgrand_total = usd(grand_total[0]["grand_total"])
         print(current_table, fcurrent_cash, fgrand_total)
-        return render_template("index.html", current_table=current_table, current_cash=fcurrent_cash, grand_total=fgrand_total)
+        return render_template(
+            "index.html",
+            current_table=current_table,
+            current_cash=fcurrent_cash,
+            grand_total=fgrand_total,
+        )
     except TypeError:
         return render_template("index.html", current_cash=fcurrent_cash)
 
@@ -83,26 +101,40 @@ def buy():
             return apology("share not found in stock!", 400)
         try:
             write_new_symbol = db.execute(
-                "INSERT INTO share_prices (share, price) VALUES (?, ?)", shares["symbol"], shares["price"])
+                "INSERT INTO share_prices (share, price) VALUES (?, ?)",
+                shares["symbol"],
+                shares["price"],
+            )
         except ValueError:
             print(f"the stock record already exists")
         # Get share id and price per unit
         share_id_price = db.execute(
-            "SELECT id, price FROM share_prices WHERE share = ?", shares["symbol"])
+            "SELECT id, price FROM share_prices WHERE share = ?", shares["symbol"]
+        )
         # Get transaction total
         purchase_total = int_num_shares * share_id_price[0]["price"]
         # Get user's current cash
-        current_cash = db.execute(
-            "SELECT cash FROM users WHERE id = ?", current_user)
+        current_cash = db.execute("SELECT cash FROM users WHERE id = ?", current_user)
         # Validate transaction
         print(f"AQUÍ: {purchase_total}, {current_cash}")
         if purchase_total <= current_cash[0]["cash"]:
             # Insert transaction data
             db.execute(
-                "INSERT INTO share_purchases (user_id, share_id, quantity, grand_total, date, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)", current_user, share_id_price[0]["id"], num_shares, purchase_total, current_date, "purchase", timestamp)
+                "INSERT INTO share_purchases (user_id, share_id, quantity, grand_total, date, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                current_user,
+                share_id_price[0]["id"],
+                num_shares,
+                purchase_total,
+                current_date,
+                "purchase",
+                timestamp,
+            )
             # Update the user cash
             db.execute(
-                "UPDATE users SET cash = (cash - ?) WHERE id = ?", purchase_total, current_user)
+                "UPDATE users SET cash = (cash - ?) WHERE id = ?",
+                purchase_total,
+                current_user,
+            )
             return redirect("/")
         else:
             return apology("insufficient funds!", 403)
@@ -118,7 +150,9 @@ def history():
     current_user = session.get("user_id")
     # Get the share name, quantity, price and total of each transaction
     history_table = db.execute(
-        "SELECT u.type, r.share, r.price, u.quantity, u.date, u.timestamp FROM share_purchases u JOIN share_prices r ON u.share_id = r.id WHERE u.user_id = ?", current_user)
+        "SELECT u.type, r.share, r.price, u.quantity, u.date, u.timestamp FROM share_purchases u JOIN share_prices r ON u.share_id = r.id WHERE u.user_id = ?",
+        current_user,
+    )
     for rows in history_table:
         rows["price"] = usd(rows["price"])
         rows["quantity"] = abs(rows["quantity"])
@@ -143,8 +177,7 @@ def login():
 
         # Query database for username
         rows = db.execute(
-            "SELECT * FROM users WHERE username = ?", request.form.get(
-                "username")
+            "SELECT * FROM users WHERE username = ?", request.form.get("username")
         )
 
         # Ensure username exists and password is correct
@@ -191,11 +224,19 @@ def quote():
         stock["price"] = usd(stock["price"])
         # TODO Implement a search in the database
         try:
-            write_new_symbol = db.execute("INSERT INTO share_prices (share, price) VALUES (?, ?)",
-                                          stock["symbol"], stock["price"])
+            write_new_symbol = db.execute(
+                "INSERT INTO share_prices (share, price) VALUES (?, ?)",
+                stock["symbol"],
+                stock["price"],
+            )
         except ValueError:
             print("the stock record already exists")
-        return render_template("quoted.html", name=stock['name'], price=stock['price'], symbol=stock['symbol'])
+        return render_template(
+            "quoted.html",
+            name=stock["name"],
+            price=stock["price"],
+            symbol=stock["symbol"],
+        )
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -209,17 +250,18 @@ def register():
         password = (request.form.get("password")).rstrip()
         if not user or not password:
             return apology("must provide username and/or password", 400)
-        password_confirmation = request.form.get(
-            "confirmation")
+        password_confirmation = request.form.get("confirmation")
         if password != password_confirmation:
             return apology("passwords are not the same!", 400)
         # Query database for register a new user and validations
         hash_password = generate_password_hash(
-            password, method="pbkdf2:sha256", salt_length=8)
+            password, method="pbkdf2:sha256", salt_length=8
+        )
         # Insert data
         try:
             db.execute(
-                "INSERT INTO users(username, hash) VALUES (?, ?)", user, hash_password)
+                "INSERT INTO users(username, hash) VALUES (?, ?)", user, hash_password
+            )
             return render_template("login.html")
         except ValueError:
             return apology("user already exists!", 400)
@@ -240,23 +282,21 @@ def profile():
         # user_id = db.execute("SELECT id FROM users WHERE username = ")
         old_password = request.form.get("old_password")
         # Query database for username
-        current_hash = db.execute(
-            "SELECT hash FROM users WHERE id = ?", user_id)
+        current_hash = db.execute("SELECT hash FROM users WHERE id = ?", user_id)
         # Ensure username exists and password is correct
         if not check_password_hash(current_hash[0]["hash"], old_password):
             return apology("incorrect current password!", 403)
         new_password = request.form.get("new_password")
-        new_password_confirmation = request.form.get(
-            "new_password_confirmation")
+        new_password_confirmation = request.form.get("new_password_confirmation")
         if not old_password:
             return apology("must provide the old password!", 403)
         if new_password != new_password_confirmation:
             return apology("passwords are not the same!", 403)
         # Query database for change password
         new_hash_password = generate_password_hash(
-            new_password, method="pbkdf2:sha256", salt_length=8)
-        db.execute(
-            "UPDATE users SET hash = ? WHERE id = ?", new_hash_password, user_id)
+            new_password, method="pbkdf2:sha256", salt_length=8
+        )
+        db.execute("UPDATE users SET hash = ? WHERE id = ?", new_hash_password, user_id)
         return redirect("/profile", user=username[0]["username"])
     else:
         return render_template("profile.html", user=username[0]["username"])
@@ -281,20 +321,36 @@ def sell():
         negative_sell_num_shares = -1 * (int_shares)
         # Get id share and price
         sell_share_id_price = db.execute(
-            "SELECT id, price FROM share_prices WHERE share = ?", symbol)
+            "SELECT id, price FROM share_prices WHERE share = ?", symbol
+        )
         # Available number of shares
         available_num_shares = db.execute(
-            "SELECT SUM(quantity) AS availability FROM share_purchases WHERE user_id = ? AND share_id = ?", current_user, sell_share_id_price[0]["id"])
+            "SELECT SUM(quantity) AS availability FROM share_purchases WHERE user_id = ? AND share_id = ?",
+            current_user,
+            sell_share_id_price[0]["id"],
+        )
         print(int_shares)
         if int_shares <= available_num_shares[0]["availability"]:
             # Get transaction total
-            sell_total = -1 * (negative_sell_num_shares *
-                               sell_share_id_price[0]["price"])
+            sell_total = -1 * (
+                negative_sell_num_shares * sell_share_id_price[0]["price"]
+            )
             # Insert transaction data
             db.execute(
-                "INSERT INTO share_purchases (user_id, share_id, quantity, grand_total, date, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)", current_user, sell_share_id_price[0]["id"], negative_sell_num_shares, sell_total, current_date, "sale", timestamp)
+                "INSERT INTO share_purchases (user_id, share_id, quantity, grand_total, date, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                current_user,
+                sell_share_id_price[0]["id"],
+                negative_sell_num_shares,
+                sell_total,
+                current_date,
+                "sale",
+                timestamp,
+            )
             db.execute(
-                "UPDATE users SET cash = (cash + ?) WHERE id = ?", sell_total, current_user)
+                "UPDATE users SET cash = (cash + ?) WHERE id = ?",
+                sell_total,
+                current_user,
+            )
             return redirect("/")
         else:
             return apology("insufficient number of shares!", 400)
@@ -303,7 +359,9 @@ def sell():
         # Get the shares of the user
         try:
             user_symbols = db.execute(
-                "SELECT share FROM share_prices AS r JOIN share_purchases AS u ON r.id = u.share_id WHERE u.user_id = ? GROUP BY r.share", current_user)
+                "SELECT share FROM share_prices AS r JOIN share_purchases AS u ON r.id = u.share_id WHERE u.user_id = ? GROUP BY r.share",
+                current_user,
+            )
             return render_template("sell.html", user_symbols=user_symbols)
         except ValueError:
             print("no records!")
