@@ -21,8 +21,7 @@ def parse_to_int(value):
     except ValueError:
         # Handle the case where the value is not a valid integer
         print(f"Invalid input: '{value}' is not an integer.")
-        return None\
-
+        return None
 
 
 @app.after_request
@@ -56,8 +55,20 @@ def index():
             print("Out-of-range month")
             return redirect("/")
 
-        days_in_month = {1: 31, 2: 29, 3: 31, 4: 30, 5: 31,
-                         6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
+        days_in_month = {
+            1: 31,
+            2: 29,
+            3: 31,
+            4: 30,
+            5: 31,
+            6: 30,
+            7: 31,
+            8: 31,
+            9: 30,
+            10: 31,
+            11: 30,
+            12: 31,
+        }
         day = request.form.get("day")
         if not day:
             return redirect("/")
@@ -67,12 +78,15 @@ def index():
             return redirect("/")
 
         db.execute(
-            "INSERT INTO birthdays (name, month, day) VALUES (?, ?, ?)", name, int_month, int_day)
+            "INSERT INTO birthdays (name, month, day) VALUES (?, ?, ?)",
+            name,
+            int_month,
+            int_day,
+        )
 
         return redirect("/")
 
     else:
-
         # TODO: Display the entries in the database on index.html
         rows = db.execute("SELECT * FROM birthdays")
         # print(rows)
